@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BORDER KOREA BRANCH</title>
+    <link rel="stylesheet" href="style.css?v=123">
+
+    <style>
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body>
+    <script>
+        // Check authentication immediately to prevent flicker
+        if (sessionStorage.getItem('borderAuth') === 'true') {
+            document.documentElement.classList.add('is-authenticated');
+        }
+    </script>
+
+    <style>
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body>
+    <div id="glitch-overlay"></div>
+    <div id="noise-overlay"></div>
+    <div id="bsod-overlay" class="hidden">
+        <div class="bsod-text">
+            <p>A fatal exception 0E has occurred at 0028:C0011E36.</p>
+            <p>The current application will be terminated.</p>
+            <p>* Press any key to terminate the current application.</p>
+            <p>* Press CTRL+ALT+DEL again to restart your computer. You will lose any unsaved information in all applications.</p>
+            <br>
+            <p style="text-align: center;">Press any key to continue</p>
+        </div>
+    </div>
+
+    <!-- System Alert Modal -->
+    <div id="system-alert" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">SYSTEM ALERT</span>
+            </div>
+            <div class="modal-body">
+                <p id="alert-message"></p>
+            </div>
+            <div class="modal-footer">
+                <button id="alert-close" class="btn btn-small">[ 확인 ]</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Screen -->
+    <div id="login-screen" class="screen active">
+        <div class="top-util-bar">
+            <div class="inner-wrap">
+                <span class="gov-text"><img src="flag.png" alt="KR" class="gov-flag"> 이 누리집은 대한민국 공식 BORDER 내부 시스템입니다.</span>
+            </div>
+        </div>
+        <div class="login-wrapper">
+            <div class="login-container">
+                <div class="login-header">
+                    <img src="logo_dark.png" alt="BORDER Logo" class="main-logo">
+                    <h2>한국지부 내부 관리 시스템</h2>
+                </div>
+                
+                <form id="login-form">
+                    <div class="input-group">
+                        <label for="username">ID</label>
+                        <input type="text" id="username" autocomplete="off" spellcheck="false" placeholder="아이디를 입력하세요">
+                    </div>
+                    <div class="input-group">
+                        <label for="password">PASSWORD</label>
+                        <input type="password" id="password" placeholder="비밀번호를 입력하세요">
+                    </div>
+                    
+                    <button type="submit" class="btn-primary">로그인</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Screen -->
+    <div id="dashboard-screen" class="screen hidden">
+        <div class="top-util-bar">
+            <div class="inner-wrap">
+                <span class="gov-text"><img src="flag.png" alt="KR" class="gov-flag"> 이 누리집은 대한민국 공식 BORDER 내부 시스템입니다.</span>
+            </div>
+        </div>
+        
+        <header class="main-header">
+            <div class="header-inner inner-wrap">
+                <div class="logo-area">
+                    <img src="logo_dark.png" alt="BORDER Logo" class="header-logo">
+                    <div class="logo-text-group">
+                        <span class="logo-title-en">BORDER</span>
+                        <span class="logo-title-ko">한국지부 내부 관리 시스템</span>
+                    </div>
+                </div>
+                
+                <div class="header-search">
+                    <input type="text" placeholder="검색어를 입력해주세요">
+                    <button class="header-search-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    </button>
+                </div>
+
+                <div class="util-links" style="position: relative;">
+                    <button id="more-menu-btn" class="more-btn" aria-label="더보기 메뉴">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </button>
+                    
+                    <div id="more-dropdown" class="more-dropdown">
+                        <div class="sidebar-header" style="display:flex; justify-content:space-between; align-items:center; padding: 20px; border-bottom: 1px solid #333;">
+                            <h3 style="margin:0; font-size:16px; color:#fff;">전체 메뉴</h3>
+                            <button id="close-sidebar-btn" style="background:none; border:none; color:#aaa; cursor:pointer;">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            </button>
+                        </div>
+                        <div class="sidebar-user-profile" style="padding: 20px; border-bottom: 1px solid #333; display: flex; flex-direction: column; gap: 5px; background: rgba(255,255,255,0.02);">
+                            <span style="color: #fff; font-size: 12px; font-weight: bold; letter-spacing: 1px;">구조 2팀</span>
+                            <span style="color: #fff; font-size: 18px; font-weight: bold;">한세경 팀장</span>
+                        </div>
+                        <ul class="dropdown-menu" style="padding:0; margin:0;">
+                            <li><a href="#">시스템 설정</a></li>
+                            <li><a href="#">사용자 권한 관리</a></li>
+                            <li><a href="#">데이터베이스 백업</a></li>
+                            <li><a href="#">보안 프로토콜 갱신</a></li>
+                            <hr style="border-color:#333; margin: 10px 0;">
+                            <li><a href="#" id="logout-btn" style="color:#ff4444;">로그아웃</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <nav class="gnb">
+                <div class="inner-wrap">
+                    <ul id="main-nav">
+                        <li class="active" data-target="main-dashboard">대시보드</li>
+                        <li data-target="team-status">팀 현황</li>
+                        <li data-target="incident-logs">사건 기록</li>
+                        <li data-target="anomalies">이상현상</li>
+                        <li data-target="entity-logs">이상체</li>
+                        <li data-target="personnel">조직 및 대원</li>
+                        <li data-target="reports">보고서</li>
+                        <li data-target="archives">기록 보관소</li>
+                        <li data-target="notices">공지사항</li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+
+        <main class="content-area">
+            <div class="inner-wrap">
+                <!-- Main Dashboard View -->
+                <section id="main-dashboard" class="view active">
+                    <div class="dashboard-layout">
+                        
+                        <!-- Left Column -->
+                        <div class="dash-left">
+                            <div class="dash-banner">
+                                <div class="banner-content">
+                                    <h2 class="banner-title">게시판이 현재 공란입니다</h2>
+                                    <p class="banner-subtitle"></p>
+                                    <span class="banner-date">2026.09.03. 업데이트 완료</span>
+                                </div>
+                            </div>
+                            
+                            
+                            
+
+                            
+                            
+                            <div class="dash-ticker">
+                                <div class="ticker-badge">시스템 상태</div>
+                                <div class="ticker-info">
+                                    <span>위협 수준: <strong class="text-success">안정</strong></span>
+                                    <span class="divider">|</span>
+                                    <span>보안 등급: <strong>LEVEL 4</strong></span>
+                                </div>
+                            </div>
+                            
+                            <div class="dash-lists">
+                                <div class="widget-card">
+                                    <h3 class="widget-title">최근 열람 기록</h3>
+                                    <ul class="widget-list">
+                                        <li><span>BORDER-KR-0047 현장 보고서</span> <span class="date">2026.09.03</span></li>
+                                        <li><span>구조 2팀 장비 점검 내역</span> <span class="date">2026.09.02</span></li>
+                                        <li><span>[미완성] BORDER-KR-0002</span> <span class="date">2026.09.01</span></li>
+                                    </ul>
+                                </div>
+                                <div class="widget-card">
+                                    <h3 class="widget-title">주요 사건 (KR)</h3>
+                                    <ul class="widget-list">
+                                        <li><a href="#">BORDER-KR-0001 (종결)</a></li>
+                                        <li><a href="#">BORDER-KR-0002 (조사 중)</a></li>
+                                        <li><a href="#">BORDER-KR-0003 (추적 중)</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column -->
+                        <div class="dash-right">
+                            <h3 class="right-col-title">빠른 접근</h3>
+                            <div class="portal-link-card" id="btn-quick-upload" style="cursor:pointer;">
+                                <h4>신규 보고서 업로드</h4>
+                                <p>현장 임무 및 보고서 등록</p>
+                            </div>
+                            <div class="portal-link-card">
+                                <h4>출동 일지 기록</h4>
+                                <p>구조팀 현장 출동 내역 등록</p>
+                            </div>
+                            <div class="portal-link-card" id="btn-edit-stats">
+                                <h4>팀원 상태 갱신</h4>
+                                <p>대원 신체/정신 수치 업데이트</p>
+                            </div>
+                            <div class="portal-link-card">
+                                <h4>기밀 데이터 열람</h4>
+                                <p>접근 제한 등급 인가자 전용</p>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    
+
+                    
+
+                </section>
+
+                <!-- Team Status View -->
+                <section id="team-status" class="view hidden">
+                    <h3 class="section-title">팀 현황 | 구조 2팀</h3>
+                    <div class="dashboard-widgets" style="margin-top: 20px;">
+                        <div class="stat-card">
+                            <h4>현재 임무</h4>
+                            <p class="value">대기 중</p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>팀 상태</h4>
+                            <p class="value text-success" id="ts-status-text">정상</p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>총 인원</h4>
+                            <p class="value" id="ts-total-text">5명</p>
+                        </div>
+                        <div class="stat-card">
+                            <h4>출동 가능 인원</h4>
+                            <p class="value">5명</p>
+    
+                        </div>
+                    </div>
+                
+                    
+</section>
+
+                <!-- Incident Logs View -->
+                <section id="incident-logs" class="view hidden">
+                    <h3 class="section-title">사건 기록</h3>
+                    <div class="data-table-wrapper">
+                                                <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>식별번호</th>
+                                    <th>제목</th>
+                                    <th>작성자</th>
+                                    <th>발생 일시</th>
+                                    <th>개체 등급</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td colspan="5" style="text-align:center; padding: 20px; color: var(--text-dim);">현재 등록된 사건 로그가 없습니다.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+
+                </section>
+
+                <!-- Personnel View -->
+                <section id="personnel" class="view hidden">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; border-bottom: 2px solid var(--primary-color); padding-bottom: 15px;">
+                        <h3 class="section-title" style="margin: 0; padding: 0; border: none;">조직 및 대원 | 구조 2팀</h3>
+                        
+                    </div>
+                    <div class="personnel-grid">
+                        <div class="person-card">
+                            <div class="p-header">
+                                <span class="p-name">한세경</span>
+                                <span class="p-role">팀장</span>
+                            </div>
+                            <div class="p-body">
+                                <div class="p-figure">
+                                    <svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                                </div>
+                                <div class="p-stats">
+                                    <div class="stat-row">
+                                        <span class="stat-label">신체</span>
+                                        <div class="stat-bar"><div class="stat-fill bg-success" data-width="100%" style="width: 0%;"></div></div>
+                                        <input type="text" class="stat-val-input text-success" value="100%">
+                                    </div>
+                                    <div class="stat-row">
+                                        <span class="stat-label">정신</span>
+                                        <div class="stat-bar"><div class="stat-fill bg-success" data-width="95%" style="width: 0%;"></div></div>
+                                        <input type="text" class="stat-val-input text-success" value="95%">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="person-card">
+                            <div class="p-header">
+                                <span class="p-name">문강현</span>
+                                <span class="p-role">대원</span>
+                            </div>
+                            <div class="p-body">
+                                <div class="p-figure">
+                                    <svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                                </div>
+                                <div class="p-stats">
+                                    <div class="stat-row">
+                                        <span class="stat-label">신체</span>
+                                        <div class="stat-bar"><div class="stat-fill bg-success" data-width="100%" style="width: 0%;"></div></div>
+                                        <input type="text" class="stat-val-input text-success" value="100%">
+                                    </div>
+                                    <div class="stat-row">
+                                        <span class="stat-label">정신</span>
+                                        <div class="stat-bar"><div class="stat-fill bg-success" data-width="92%" style="width: 0%;"></div></div>
+                                        <input type="text" class="stat-val-input text-success" value="92%">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="person-card">
+                            <div class="p-header">
+                                <span class="p-name">이설하</span>
+                                <span class="p-role">대원 <span class="p-sub">[특수]</span></span>
+                            </div>
+                            <div class="p-body">
+                                <div class="p-figure">
+                                    <svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                                </div>
+                                <div class="p-stats">
+                                    <div class="stat-row">
+                                        <span class="stat-label">신체</span>
+                                        <div class="stat-bar"><div class="stat-fill bg-success" data-width="100%" style="width: 0%;"></div></div>
+                                        <input type="text" class="stat-val-input text-success" value="100%">
+                                    </div>
+                                    <div class="stat-row">
+                                        <span class="stat-label">정신</span>
+                                        <div class="stat-bar"><div class="stat-fill bg-success" data-width="100%" style="width: 0%;"></div></div>
+                                        <input type="text" class="stat-val-input text-success" value="100%">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="person-card">
+                            <div class="p-header">
+                                <span class="p-name">제임스 모럴</span>
+                                <span class="p-role">대원 <span class="p-sub">[지원]</span></span>
+                            </div>
+                            <div class="p-body">
+                                <div class="p-figure">
+                                    <svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                                </div>
+                                <div class="p-stats">
+                                    <div class="stat-row">
+                                        <span class="stat-label">신체</span>
+                                        <div class="stat-bar"><div class="stat-fill bg-success" data-width="90%" style="width: 0%;"></div></div>
+                                        <input type="text" class="stat-val-input text-success" value="90%">
+                                    </div>
+                                    <div class="stat-row">
+                                        <span class="stat-label">정신</span>
+                                        <div class="stat-bar"><div class="stat-fill bg-warning" data-width="50%" style="width: 0%;"></div></div>
+                                        <input type="text" class="stat-val-input text-warning" value="50%">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="person-card">
+                            <div class="p-header">
+                                <span class="p-name">서연우</span>
+                                <span class="p-role">대원</span>
+                            </div>
+                            <div class="p-body">
+                                <div class="p-figure">
+                                    <svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                                </div>
+                                <div class="p-stats">
+                                    <div class="stat-row">
+                                        <span class="stat-label">신체</span>
+                                        <div class="stat-bar"><div class="stat-fill bg-success" data-width="98%" style="width: 0%;"></div></div>
+                                        <input type="text" class="stat-val-input text-success" value="98%">
+                                    </div>
+                                    <div class="stat-row">
+                                        <span class="stat-label">정신</span>
+                                        <div class="stat-bar"><div class="stat-fill bg-success" data-width="100%" style="width: 0%;"></div></div>
+                                        <input type="text" class="stat-val-input text-success" value="100%">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+
+                </section>
+
+                
+                <!-- Docs View -->
+                
+                <!-- Reports View -->
+                <section id="reports" class="view hidden">
+                    <h3 class="section-title">공문서/보고서 관리</h3>
+                    
+                    <div style="background: rgba(0,0,0,0.5); padding: 30px; border: 1px solid var(--border-color); margin-bottom: 20px;">
+                        
+                        <form id="rescue-report-form" class="official-doc-form">
+                            <div class="doc-header" style="text-align:center; border-bottom: 2px solid #555; padding-bottom:20px; margin-bottom:30px;">
+                                <h4 style="color:var(--text-muted); margin-bottom: 10px;">[BORDER 한국지부]</h4>
+                                <h1 style="color:#fff; font-size:24px; margin: 5px 0;">현장 구조 활동 보고서</h1>
+                                <h3 style="color:#888; font-size:16px; margin: 0; letter-spacing: 2px;">RESCUE OPERATION REPORT</h3>
+                            </div>
+
+                            <style>
+                                .doc-section { margin-bottom: 40px; }
+                                .doc-section h4 { font-size: 1.1rem; color: #fff; border-bottom: 1px solid #444; padding-bottom: 8px; margin-bottom: 15px; }
+                                .doc-row { display: flex; gap: 20px; margin-bottom: 10px; flex-wrap: wrap; }
+                                .doc-field { flex: 1; display: flex; align-items: center; gap: 10px; min-width: 250px; margin-bottom: 10px; }
+                                .doc-field-block { width: 100%; margin-bottom: 15px; }
+                                .doc-field label, .doc-field-block label { min-width: 120px; color: #aaa; font-weight: bold; }
+                                .doc-input { flex: 1; background: transparent; border: none; border-bottom: 1px dashed #555; color: #fff; padding: 5px; font-family: inherit; width: 100%; }
+                                .doc-input:focus { outline: none; border-bottom-color: var(--text-accent); }
+                                .doc-textarea { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid #444; color: #fff; padding: 10px; resize: vertical; margin-top: 5px; font-family: inherit; }
+                                .doc-check-group { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 5px; margin-bottom: 15px; }
+                                .doc-check-group label { color: #ccc; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+                                .doc-check-group input { accent-color: #555; }
+                                .frozen-val { color: var(--success); font-weight: bold; }
+                                .frozen-chk { color: var(--success); font-weight: bold; font-family: monospace; }
+                                .doc-divider { border-top: 1px dashed #444; margin: 30px 0; }
+                                .center-signature { text-align: center; margin-top: 40px; }
+                                .center-signature div { margin-bottom: 10px; color: #aaa; }
+                                .center-signature .sig-line { display: inline-block; width: 150px; border-bottom: 1px solid #555; margin-left: 10px; }
+                                .footer-text { text-align: center; color: #666; font-size: 0.9rem; margin-top: 50px; line-height: 1.5; }
+                            </style>
+
+                            <!-- 문서 정보 -->
+                            <div class="doc-section">
+                                <h4>문서 정보</h4>
+                                <div class="doc-row">
+                                    <div class="doc-field"><label>보고서 번호 :</label><input type="text" class="doc-input"></div>
+                                    <div class="doc-field"><label>사건 번호 :</label><input type="text" id="inc-num-input" class="doc-input" placeholder="BORDER-KR-□□□□" required></div>
+                                </div>
+                                <div class="doc-row">
+                                    <div class="doc-field"><label>작성 부서 :</label><input type="text" class="doc-input" value="구조팀"></div>
+                                    <div class="doc-field"><label>작성자 :</label><input type="text" id="author-input" class="doc-input" required></div>
+                                </div>
+                                <div class="doc-row">
+                                    <div class="doc-field"><label>작성 일시 :</label><input type="text" class="doc-input"></div>
+                                    <div class="doc-field"><label>검토자 :</label><input type="text" class="doc-input"></div>
+                                </div>
+                                <div class="doc-field-block" style="display:flex; align-items:center; gap:10px;">
+                                    <label>문서 상태 :</label>
+                                    <div class="doc-check-group" style="margin:0;">
+                                        <label><input type="radio" name="doc_status" value="작성 중"> 작성 중</label>
+                                        <label><input type="radio" name="doc_status" value="검토 중"> 검토 중</label>
+                                        <label><input type="radio" name="doc_status" value="최종" checked> 최종</label>
+                                    </div>
+                                </div>
+                                <div class="doc-row">
+                                    <div class="doc-field-block" style="display:flex; align-items:center; gap:10px;">
+                                    <label>개체 등급 :</label>
+                                    <div class="doc-check-group" style="margin:0;">
+                                        <label><input type="radio" name="entity_grade" value="흑" checked> 흑 (Black)</label>
+                                        <label><input type="radio" name="entity_grade" value="적"> 적 (Red)</label>
+                                        <label><input type="radio" name="entity_grade" value="황"> 황 (Yellow)</label>
+                                        <label><input type="radio" name="entity_grade" value="녹"> 녹 (Green)</label>
+                                        <label><input type="radio" name="entity_grade" value="청"> 청 (Blue)</label>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                            
+                            <div class="doc-divider"></div>
+
+                            <!-- 01. 출동 정보 -->
+                            <div class="doc-section">
+                                <h4>01. 출동 정보</h4>
+                                <div class="doc-row">
+                                    <div class="doc-field"><label>출동 요청 일시 :</label><input type="text" id="dispatch-req-date" class="doc-input" placeholder="YYYY-MM-DD HH:MM" required></div>
+                                    <div class="doc-field"><label>현장 출동 일시 :</label><input type="text" class="doc-input"></div>
+                                </div>
+                                <div class="doc-row">
+                                    <div class="doc-field"><label>현장 도착 일시 :</label><input type="text" class="doc-input"></div>
+                                    <div class="doc-field"><label>현장 철수 일시 :</label><input type="text" class="doc-input"></div>
+                                </div>
+                                <div class="doc-field-block" style="margin-top:15px;">
+                                    <label>출동 인원 :</label>
+                                    <div class="doc-row" style="margin-top:5px; padding-left:20px;">
+                                        <div class="doc-field"><label style="min-width:50px;">팀장 :</label><input type="text" class="doc-input"></div>
+                                        <div class="doc-field"><label style="min-width:50px;">대원 :</label><input type="text" class="doc-input"></div>
+                                    </div>
+                                </div>
+                                <div class="doc-field-block">
+                                    <label>출동 사유 :</label>
+                                    <textarea class="doc-textarea" rows="2"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="doc-divider"></div>
+
+                            <!-- 02. 현장 개요 -->
+                            <div class="doc-section">
+                                <h4>02. 현장 개요</h4>
+                                <div class="doc-row">
+                                    <div class="doc-field"><label>발생 장소 :</label><input type="text" class="doc-input"></div>
+                                    <div class="doc-field"><label>현장 규모 :</label><input type="text" class="doc-input"></div>
+                                </div>
+                                <div class="doc-field-block">
+                                    <label>현장 상태 :</label>
+                                    <div class="doc-check-group">
+                                        <label><input type="checkbox"> 정상</label>
+                                        <label><input type="checkbox"> 통제 필요</label>
+                                        <label><input type="checkbox"> 이상현상 발생</label>
+                                        <label><input type="checkbox"> 이상체 확인</label>
+                                        <label><input type="checkbox"> 민간인 고립</label>
+                                        <label><input type="checkbox"> 구조 대상 다수</label>
+                                        <label><input type="checkbox"> 접근 제한</label>
+                                        <label><input type="checkbox"> 기타</label>
+                                    </div>
+                                </div>
+                                <div class="doc-field-block">
+                                    <label>현장 상황 :</label>
+                                    <textarea class="doc-textarea" rows="3"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="doc-divider"></div>
+
+                            <!-- 03. 민간인 현황 -->
+                            <div class="doc-section">
+                                <h4>03. 민간인 현황</h4>
+                                <div class="doc-row">
+                                    <div class="doc-field" style="min-width:150px;"><label>현장 확인 인원 :</label><input type="text" class="doc-input"></div>
+                                    <div class="doc-field" style="min-width:150px;"><label>구조 완료 인원 :</label><input type="text" class="doc-input"></div>
+                                    <div class="doc-field" style="min-width:150px;"><label>현장 잔류 인원 :</label><input type="text" class="doc-input"></div>
+                                </div>
+                                <div class="doc-row">
+                                    <div class="doc-field" style="min-width:150px;"><label>부상자 :</label><input type="text" class="doc-input"></div>
+                                    <div class="doc-field" style="min-width:150px;"><label>실종자 :</label><input type="text" class="doc-input"></div>
+                                    <div class="doc-field" style="min-width:150px;"><label>사망자 :</label><input type="text" class="doc-input"></div>
+                                </div>
+                                <div class="doc-field-block">
+                                    <label>특이사항 :</label>
+                                    <textarea class="doc-textarea" rows="2"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="doc-divider"></div>
+
+                            <!-- 04. 구조 활동 -->
+                            <div class="doc-section">
+                                <h4>04. 구조 활동</h4>
+                                <div class="doc-field-block">
+                                    <label>주요 구조 활동 :</label>
+                                    <textarea class="doc-textarea" rows="4" placeholder="주요 구조 활동 내용을 상세히 입력하세요."></textarea>
+                                </div>
+                                <div class="doc-field-block" style="display:flex; align-items:center; gap:10px;">
+                                    <label>특수 장비 사용 여부 :</label>
+                                    <div class="doc-check-group" style="margin:0;">
+                                        <label><input type="radio" name="equip_use" value="없음" checked> 없음</label>
+                                        <label><input type="radio" name="equip_use" value="있음"> 있음</label>
+                                    </div>
+                                </div>
+                                <div class="doc-field-block">
+                                    <label>사용 장비 및 사유 :</label>
+                                    <textarea class="doc-textarea" rows="2"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="doc-divider"></div>
+
+                            <!-- 05. 이상현상 및 이상체 관련 사항 -->
+                            <div class="doc-section">
+                                <h4>05. 이상현상 및 이상체 관련 사항</h4>
+                                
+                                <div class="doc-field-block" style="display:flex; align-items:center; gap:10px;">
+                                    <label>이상현상 확인 여부 :</label>
+                                    <div class="doc-check-group" style="margin:0;">
+                                        <label><input type="radio" name="anom_conf" value="확인"> 확인</label>
+                                        <label><input type="radio" name="anom_conf" value="미확인" checked> 미확인</label>
+                                        <label><input type="radio" name="anom_conf" value="확인 불가"> 확인 불가</label>
+                                    </div>
+                                </div>
+                                <div class="doc-field-block" style="display:flex; align-items:center; gap:10px;">
+                                    <label>이상현상 식별번호 :</label>
+                                    <div style="display:flex; align-items:center; gap:5px; color:#fff;"><input type="text" id="ap-display" class="doc-input" placeholder="..." style="width:100px;"></div>
+                                </div>
+
+                                <div class="doc-field-block" style="display:flex; align-items:center; gap:10px; margin-top:20px;">
+                                    <label>이상체 확인 여부 :</label>
+                                    <div class="doc-check-group" style="margin:0;">
+                                        <label><input type="radio" name="ent_conf" value="확인"> 확인</label>
+                                        <label><input type="radio" name="ent_conf" value="미확인" checked> 미확인</label>
+                                        <label><input type="radio" name="ent_conf" value="확인 불가"> 확인 불가</label>
+                                    </div>
+                                </div>
+                                <div class="doc-field-block" style="display:flex; align-items:center; gap:10px;">
+                                    <label>이상체 식별번호 :</label>
+                                    <div style="display:flex; align-items:center; gap:5px; color:#fff;"><input type="text" id="ac-display" class="doc-input" placeholder="..." style="width:100px;"></div>
+                                </div>
+
+                                <div class="doc-field-block" style="margin-top:20px;">
+                                    <label>현장 영향 :</label>
+                                    <textarea class="doc-textarea" rows="2"></textarea>
+                                </div>
+                                <div class="doc-field-block">
+                                    <label>특이사항 :</label>
+                                    <textarea class="doc-textarea" rows="2"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="doc-divider"></div>
+
+                            <!-- 06. 현장 대응 -->
+                            <div class="doc-section">
+                                <h4>06. 현장 대응</h4>
+                                <div class="doc-field-block">
+                                    <label>현장에서 실시한 주요 조치 :</label>
+                                    <textarea class="doc-textarea" rows="3"></textarea>
+                                </div>
+                                <div class="doc-row">
+                                    <div class="doc-field-block" style="flex:1;">
+                                        <label>추가 조사 여부 :</label>
+                                        <div class="doc-check-group">
+                                            <label><input type="radio" name="add_invest" value="실시"> 실시</label>
+                                            <label><input type="radio" name="add_invest" value="미실시 (필요)"> 미실시 (필요)</label>
+                                            <label><input type="radio" name="add_invest" value="불필요" checked> 불필요</label>
+                                        </div>
+                                    </div>
+                                    <div class="doc-field-block" style="flex:1;">
+                                        <label>종결 조치 여부 :</label>
+                                        <div class="doc-check-group">
+                                            <label><input type="radio" name="close_action" value="완료"> 완료</label>
+                                            <label><input type="radio" name="close_action" value="진행"> 진행</label>
+                                            <label><input type="radio" name="close_action" value="불필요" checked> 불필요</label>
+                                        </div>
+                                    </div>
+                                    <div class="doc-field-block" style="flex:1;">
+                                        <label>추가 구조 필요 여부 :</label>
+                                        <div class="doc-check-group">
+                                            <label><input type="radio" name="add_rescue" value="없음" checked> 없음</label>
+                                            <label><input type="radio" name="add_rescue" value="있음"> 있음</label>
+                                            <label><input type="radio" name="add_rescue" value="보류"> 보류</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="doc-divider"></div>
+
+                            <!-- 07. 직원 피해 및 상태 -->
+                            <div class="doc-section">
+                                <h4>07. 직원 피해 및 상태</h4>
+                                <label style="color:#aaa; font-weight:bold; display:block; margin-bottom:10px;">구조팀 직원 피해 :</label>
+                                <div class="doc-row">
+                                    <div class="doc-field"><label>부상 :</label><input type="text" class="doc-input"></div>
+                                    <div class="doc-field"><label>치료 :</label><input type="text" class="doc-input"></div>
+                                </div>
+                                <div class="doc-row">
+                                    <div class="doc-field"><label>이상 증상 :</label><input type="text" class="doc-input"></div>
+                                    <div class="doc-field"><label>기타 :</label><input type="text" class="doc-input"></div>
+                                </div>
+                                <div class="doc-field-block">
+                                    <label>특이사항 :</label>
+                                    <textarea class="doc-textarea" rows="2"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="doc-divider"></div>
+
+                            <!-- 08. 현장 인계 -->
+                            <div class="doc-section">
+                                <h4>08. 현장 인계</h4>
+                                <div class="doc-row">
+                                    <div class="doc-field-block" style="flex:1;">
+                                        <label>인계 여부 :</label>
+                                        <div class="doc-check-group">
+                                            <label><input type="radio" name="handover" value="인계 완료"> 인계 완료</label>
+                                            <label><input type="radio" name="handover" value="인계 예정"> 인계 예정</label>
+                                            <label><input type="radio" name="handover" value="인계 불필요" checked> 인계 불필요</label>
+                                        </div>
+                                    </div>
+                                    <div class="doc-field-block" style="flex:1;">
+                                        <label>인계 부서 :</label>
+                                        <div class="doc-check-group">
+                                            <label><input type="checkbox"> 조사팀</label>
+                                            <label><input type="checkbox"> 연구팀</label>
+                                            <label><input type="checkbox"> 처리팀</label>
+                                            <label><input type="checkbox"> 기타</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="doc-row">
+                                    <div class="doc-field"><label>인계 일시 :</label><input type="text" class="doc-input"></div>
+                                    <div class="doc-field"><label>인계자 :</label><input type="text" class="doc-input"></div>
+                                    <div class="doc-field"><label>인수자 :</label><input type="text" class="doc-input"></div>
+                                </div>
+                                <div class="doc-field-block">
+                                    <label>인계 내용 :</label>
+                                    <textarea class="doc-textarea" rows="2"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="doc-divider"></div>
+
+                            <!-- 09. 현장 종료 -->
+                            <div class="doc-section">
+                                <h4>09. 현장 종료</h4>
+                                <div class="doc-field-block">
+                                    <label>현장 구조 활동 상태 :</label>
+                                    <div class="doc-check-group">
+                                        <label><input type="checkbox"> 완료</label>
+                                        <label><input type="checkbox"> 부분 완료</label>
+                                        <label><input type="checkbox"> 추가 출동 필요</label>
+                                        <label><input type="checkbox"> 타 부서 인계</label>
+                                        <label><input type="checkbox"> 현장 접근 제한</label>
+                                        <label><input type="checkbox"> 기타</label>
+                                    </div>
+                                </div>
+                                <div class="doc-row">
+                                    <div class="doc-field"><label>현장 철수 일시 :</label><input type="text" class="doc-input"></div>
+                                </div>
+                                <div class="doc-field-block">
+                                    <label>철수 당시 현장 상태 :</label>
+                                    <textarea class="doc-textarea" rows="2"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="doc-divider"></div>
+
+                            <!-- 10. 구조팀 최종 의견 -->
+                            <div class="doc-section">
+                                <h4>10. 구조팀 최종 의견</h4>
+                                <div class="doc-field-block">
+                                    <label>현장 판단 :</label>
+                                    <textarea class="doc-textarea" rows="3"></textarea>
+                                </div>
+                                <div class="doc-field-block">
+                                    <label>추가 조치 요청 :</label>
+                                    <textarea class="doc-textarea" rows="2"></textarea>
+                                </div>
+                                <div class="doc-field-block">
+                                    <label>기타 특이사항 :</label>
+                                    <textarea class="doc-textarea" rows="2"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="doc-divider"></div>
+
+                            <!-- 첨부 파일 영역 (추가) -->
+                            <div class="doc-section">
+                                <h4>첨부 자료</h4>
+                                <div class="doc-field-block" style="background: rgba(255,255,255,0.05); padding: 15px; border: 1px dashed #555;">
+                                    <label style="display:block; margin-bottom:10px;">현장 사진, 동영상, 관련 문서 업로드 :</label>
+                                    <input type="file" id="report-attachments" multiple accept="image/*,video/*,.hwp,.pdf,.doc,.docx" style="color: #aaa; width: 100%;">
+                                    <div style="font-size:0.85rem; color:#777; margin-top:5px;">* 첨부된 파일은 사건 기록 열람 시 함께 제공됩니다.</div>
+                                </div>
+                            </div>
+
+                            <div class="doc-divider"></div>
+
+                            <!-- 작성 확인 -->
+                            <div class="doc-section center-signature">
+                                <h4 style="border:none; margin-bottom:30px;">작성 확인</h4>
+                                <div style="display:flex; justify-content:center; align-items:center; gap:10px; margin-bottom:15px;">
+                                    <span>작성자 :</span>
+                                    <input type="text" class="doc-input" style="width:150px; flex:none; text-align:center;">
+                                    <span>(인)</span>
+                                </div>
+                                <div style="display:flex; justify-content:center; align-items:center; gap:10px; margin-bottom:15px;">
+                                    <span>검토자 :</span>
+                                    <input type="text" class="doc-input" style="width:150px; flex:none; text-align:center;">
+                                    <span>(인)</span>
+                                </div>
+                                <div style="display:flex; justify-content:center; align-items:center; gap:10px; margin-top:20px;">
+                                    <span>최종 확인 일시 :</span>
+                                    <input type="text" class="doc-input" style="width:200px; flex:none; text-align:center;">
+                                </div>
+                            </div>
+
+                            <div class="footer-text">
+                                BORDER 한국지부<br>
+                                구조팀<br><br>
+                                본 문서는 BORDER 내부 관리 시스템에 등록된<br>
+                                내부 관리 문서입니다.
+                            </div>
+
+                            <div style="margin-top: 50px; text-align: center;">
+                                <button type="submit" id="report-submit-btn" class="btn btn-primary" style="padding: 15px 50px; font-size: 1.1rem;">보고서 등록</button>
+                            </div>
+                        </form>
+                    </div>
+                    
+
+                </section>
+                
+                <!-- Readonly Modal -->
+                <div id="readonly-modal" class="modal-overlay hidden">
+                    <div class="modal-content doc-readonly-content">
+                        <div class="modal-header">
+                            <span style="color:#aaa;">보고서 열람 모드 (읽기 전용)</span>
+                            <div style="display:flex; flex-direction:row; align-items:center; gap:15px; margin-left:auto;">
+                                <button id="edit-report-btn" title="수정" style="background:transparent; border:none; color:#ccc; cursor:pointer; padding:5px; display:flex; align-items:center; justify-content:center;">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>
+                                </button>
+                                <button id="delete-report-btn" title="삭제" style="background:transparent; border:none; color:#ff4444; cursor:pointer; padding:5px; display:flex; align-items:center; justify-content:center;">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                </button>
+                                <button id="close-readonly-btn" title="닫기" style="background:transparent; border:none; color:#fff; cursor:pointer; padding:5px; display:flex; align-items:center; justify-content:center;">
+                                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="9" x2="15" y2="15"></line><line x1="15" y1="9" x2="9" y2="15"></line></svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="readonly-body" style="padding: 40px;"></div>
+                    </div>
+                </div>
+    
+
+                <!-- Placeholder View for other menus -->
+                <section id="placeholder-view" class="view hidden">
+                    <h3 id="placeholder-title" class="section-title">메뉴</h3>
+                    <div class="restricted-box">
+                        <div class="icon">🚧</div>
+                        <h4>[ 미완성 ]</h4>
+                        <p>해당 문서는 현재 데이터베이스에 작성 및 이관 중입니다.</p>
+                        <p class="access-info">STATUS : DATA PENDING</p>
+                    </div>
+                </section>
+
+                <!-- Anomalies View -->
+                <section id="anomalies" class="view hidden">
+                    <h3 class="section-title">이상 현상 데이터베이스</h3>
+                    <div style="margin-bottom: 15px;">
+                        <input type="text" id="search-anom" class="doc-input" placeholder="검색 (예: 1, 0001, BORDER-KR-0001) 후 엔터" style="width: 100%; max-width: 400px; padding: 10px; border-radius: 6px;">
+                    </div>
+                    <div id="anomalies-list-container" style="background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 8px; height: 600px; overflow-y: auto; box-shadow: 0 4px 6px rgba(0,0,0,0.3);" class="hide-scrollbar">
+                        <!-- Dynamically populated by app.js -->
+                    </div>
+                </section>
+
+                <!-- Entity Logs View -->
+                <section id="entity-logs" class="view hidden">
+                    <h3 class="section-title">이상체 데이터베이스</h3>
+                    <div style="margin-bottom: 15px;">
+                        <input type="text" id="search-ent" class="doc-input" placeholder="검색 (예: 1, 0001, BORDER-KR-0001) 후 엔터" style="width: 100%; max-width: 400px; padding: 10px; border-radius: 6px;">
+                    </div>
+                    <div id="entities-list-container" style="background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 8px; height: 600px; overflow-y: auto; box-shadow: 0 4px 6px rgba(0,0,0,0.3);" class="hide-scrollbar">
+                        <!-- Dynamically populated by app.js -->
+                    </div>
+                </section>
+
+                <!-- Archives View -->
+                <section id="archives" class="view hidden">
+                    <h3 class="section-title">기록 보관소</h3>
+                    <div style="background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 8px; padding: 60px 20px; text-align: center; color: var(--text-secondary);">
+                        <p style="font-size: 1.1rem; letter-spacing: 1px; color: #888;">공란입니다.</p>
+                    </div>
+                </section>
+
+                <!-- Notices View -->
+                <section id="notices" class="view hidden">
+                    <h3 class="section-title">공지사항</h3>
+                    <div style="background: var(--bg-white); border: 1px solid var(--border-color); border-radius: 8px; padding: 60px 20px; text-align: center; color: var(--text-secondary);">
+                        <p style="font-size: 1.1rem; letter-spacing: 1px; color: #888;">공란입니다.</p>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js?v=123"></script>
+    
+    
+
+    <!-- BSOD Screen -->
+    <div id="bsod-fullscreen" class="hidden">
+        <div class="tv-noise"></div>
+        <div id="bsod-text"></div>
+    </div>
+
+</body>
+</html>
